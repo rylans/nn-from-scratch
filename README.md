@@ -1,2 +1,2 @@
 # nn-from-scratch
-Neural network implementation
+Neural network implementation in Python
