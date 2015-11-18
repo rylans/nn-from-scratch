@@ -9,14 +9,10 @@ class Neuron(object):
 
     def out(self, inputs):
         if len(inputs) != self.num_inputs:
-            raise ValueError('inputs has length ' + str(len(inputs)))
-        inputs_with_bias = [x for x in inputs]
-        inputs_with_bias.append(1)
-        activation = 0
-        for w, x in zip(self.weights, inputs_with_bias):
-            activation += w*x
-        return self.activation(activation)
-
+            raise ValueError('inputs has length {0} instead of {1}'.\
+                    format(str(len(inputs)), str(self.num_inputs)))
+        inputs_with_bias = [x for x in inputs] + [1]
+        return self.activation(sum([w*x for w, x in zip(self.weights, inputs_with_bias)]))
 
 if __name__ == '__main__':
     import math
