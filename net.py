@@ -2,6 +2,17 @@
 from neuron import Neuron
 
 class Net(object):
+    '''Neural network composed of layers of Neurons
+
+    >>> len(Net([5,7,11], 1).layers[0])
+    5
+
+    >>> len(Net([5,7,11], 1).layers[1])
+    7
+
+    >>> len(Net([5,7,11], 1).layers[2])
+    11
+    '''
     def __init__(self, schema, input_size):
         import math
         sigm = lambda x: (1.0/(1+pow(math.e, x)))
@@ -13,11 +24,17 @@ class Net(object):
 
         last_size = input_size
         for layer in schema:
-            layer_neurons = [Neuron(last_size, sigm, sigmp, error) for k in range(layer)]
+            layer_neurons = [Neuron(last_size, sigm, sigmp, error) \
+                    for k in range(layer)]
             last_size = layer
             self.layers.append(layer_neurons)
 
     def feedforward(self, inputs):
+        '''Feed input through the network and return final activations
+
+        >>> len(Net([2,4,7], 3).feedforward([0.1,0.2,0.3]))
+        7
+        '''
         layer_inputs = inputs
         for layer in self.layers:
             layer_activations = [n.out(layer_inputs) for n in layer]
@@ -29,13 +46,5 @@ class Net(object):
                 format(str([len(l) for l in self.layers]), self.input_size)
 
 if __name__ == '__main__':
-    net = Net([3, 5, 1], 2)
-    print net
-    print net.feedforward([0.11, 0.89])
-
-    print
-
-    net = Net([2, 4, 6, 8, 6, 4, 2], 5)
-    print net
-    print net.feedforward([0.1, 0.55, 0.2, 0.3, 0.35])
-
+    import doctest
+    doctest.testmod()
