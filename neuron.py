@@ -1,6 +1,6 @@
 '''Neuron'''
 class Neuron(object):
-    LEARNING_RATE = 0.5
+    LEARNING_RATE = 0.09
 
     def __init__(self, num_inputs, activation, activationp, error):
         self.weights = [self.rnd() for i in range(num_inputs + 1)]
@@ -23,16 +23,24 @@ class Neuron(object):
 
     def learn_1(self, inputs, target):
         output = self.out(inputs)
-        reg = self.regularize()
         this_error = target - output
         error_value = self.error(target, output)
         self.last_error = error_value
         delta_ws = [this_error*self.LEARNING_RATE*error_value*x for x in inputs] + [this_error*self.LEARNING_RATE*error_value]
         oldw = self.weights
         self.weights = [w - dw for w, dw in zip(self.weights, delta_ws)]
+        self.to_zero()
 
     def regularize(self):
         return 0.5*sum([pow(w, 2) for w in self.weights])
+
+    def to_zero(self):
+        reg = self.regularize()
+        if reg < 1:
+            pass
+        else:
+            factor = 1.0/reg
+            self.weights = [w*factor for w in self.weights]
 
     def __repr__(self):
         return 'Neuron({0})'.format(self.weights)
