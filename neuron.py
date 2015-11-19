@@ -3,12 +3,16 @@ class Neuron(object):
     LEARNING_RATE = 0.5
 
     def __init__(self, num_inputs, activation, activationp, error):
-        import random
-        self.weights = [random.random() for i in range(num_inputs + 1)]
+        self.weights = [self.rnd() for i in range(num_inputs + 1)]
         self.num_inputs = num_inputs
         self.activation = activation
         self.activationp  = activationp
         self.error = error
+        self.last_error = 999
+
+    def rnd(self):
+        import random
+        return (3.0 + (random.random() - 0.5))/6
 
     def out(self, inputs):
         if len(inputs) != self.num_inputs:
@@ -22,6 +26,7 @@ class Neuron(object):
         reg = self.regularize()
         this_error = target - output
         error_value = self.error(target, output)
+        self.last_error = error_value
         delta_ws = [this_error*self.LEARNING_RATE*error_value*x for x in inputs] + [this_error*self.LEARNING_RATE*error_value]
         oldw = self.weights
         self.weights = [w - dw for w, dw in zip(self.weights, delta_ws)]
@@ -32,22 +37,21 @@ class Neuron(object):
     def __repr__(self):
         return 'Neuron({0})'.format(self.weights)
 
-if __name__ == '__main__':
+def learn_specific(steps):
     import math
     import random
     sigm = lambda x: (1.0/(1+pow(math.e, x)))
     sigmp = lambda x: sigm(x)*(1.0-sigm(x))
     error = lambda x, y:  0.5*pow(x-y, 2)
 
-    neuron = Neuron(5, sigm, sigmp, error)
-
-    for i in range(300):
-        inputs = [random.random() for r in range(5)]
-        target = 1
-        if sum(inputs) > 2.5:
-            target = 0
-        neuron.learn_1(inputs, target)
-
-    print neuron.out([0.1, 0.1, 0.1, 0.2, 0.0]) #want 1
-    print neuron.out([0.9, 0.9, 0.8, 0.7, 0.9]) #want 0
+    neuron = Neuron(3, sigm, sigmp, error)
     print neuron
+    for i in range(steps):
+        inputs = [random.random() for r in range(3)]
+        target = 2*inputs[0] + 0.3*inputs[1] - 0.7*inputs[2]
+        neuron.learn_1(inputs, target)
+    print neuron
+    print neuron.last_error
+
+if __name__ == '__main__':
+    learn_specific(200)
